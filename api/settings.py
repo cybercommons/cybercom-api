@@ -113,6 +113,7 @@ DATABASE_ROUTERS = config.DATABASE_ROUTERS
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
+# TODO: Confirm to keep - this overwrites the above assignment using settings in config.py
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
