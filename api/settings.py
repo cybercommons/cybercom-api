@@ -9,6 +9,15 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 from api import config
 
+try:
+    from api.config import (EMAIL_BACKEND, EMAIL_HOST, EMAIL_PORT,
+                            EMAIL_HOST_USER, EMAIL_HOST_PASSWORD,
+                            EMAIL_USE_TLS)
+except ImportError:
+    # email settings not configured - email will not work
+    pass
+
+
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -113,7 +122,6 @@ DATABASE_ROUTERS = config.DATABASE_ROUTERS
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
-# TODO: Confirm to keep - this overwrites the above assignment using settings in config.py
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
