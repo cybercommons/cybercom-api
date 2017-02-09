@@ -1,41 +1,14 @@
-from django.test import TestCase
-from django.core.urlresolvers import reverse
+from django.test import TestCase, Client
 from django.db import IntegrityError
 from django.contrib.auth.models import User
-#from rest_framework import status
+from django.contrib.auth.models import UserManager
+
 from rest_framework.test import APIClient, APITestCase, APIRequestFactory, force_authenticate
 from .models import *
 from .views import UserProfile
 
 
 class AuthUserTestCase(TestCase):
-    def setUp(self):
-        AuthUser.objects.create(password="testingpassword",
-                                username="testinguser",
-                                first_name="testing",
-                                last_name="user",
-                                email="testinguser@example.org")
-
-    def test_user_exists(self):
-        testuser = AuthUser.objects.get(username="testinguser")
-        self.assertEqual(testuser.username, "testinguser")
-        self.assertTrue(testuser.is_active)
-        self.assertFalse(testuser.is_superuser)
-        self.assertFalse(testuser.is_staff)
-        self.assertIsNotNone(testuser.date_joined)
-        self.assertIsNone(testuser.last_login)  # no prior login
-
-    def test_creat_new_user_with_existing_username(self):
-        options = {"password": "anotherpassword",
-                   "username": "testinguser",  # This is the same username as created in setUp()
-                   "first_name": "John",
-                   "last_name": "Smith",
-                   "email": "jsmith@example.org"}
-        with self.assertRaises(IntegrityError):
-            AuthUser.objects.create(**options)
-
-
-class APIAccountTestCase(APITestCase):
     def setUp(self):
         User(username="admin", is_staff=True, is_superuser=True, is_active=True).save()  # create admin user
         User(username="staff", is_staff=True, is_superuser=False, is_active=True).save()  # create staff user
@@ -44,70 +17,84 @@ class APIAccountTestCase(APITestCase):
         User(username="inactivestaff", is_staff=True, is_superuser=False, is_active=False).save()  # create inactive staff user
         User(username="inactiveuser", is_staff=False, is_superuser=False, is_active=False).save()  # create inactive non-privileged user
 
-    def test_account_existance(self):
-        self.assertIsNotNone(User.objects.get(username="admin").pk)
-        self.assertIsNotNone(User.objects.get(username="staff").pk)
-        self.assertIsNotNone(User.objects.get(username="user").pk)
-        self.assertIsNotNone(User.objects.get(username="inactiveadmin").pk)
-        self.assertIsNotNone(User.objects.get(username="inactivestaff").pk)
-        self.assertIsNotNone(User.objects.get(username="inactiveuser").pk)
+        for user in User.objects.all():
+            user.set_password('password')
+            user.save()
 
-        self.assertTrue(User.objects.get(username="admin").is_staff)
-        self.assertTrue(User.objects.get(username="admin").is_superuser)
-        self.assertTrue(User.objects.get(username="admin").is_active)
-        self.assertTrue(User.objects.get(username="inactiveadmin").is_staff)
-        self.assertTrue(User.objects.get(username="inactiveadmin").is_superuser)
-        self.assertFalse(User.objects.get(username="inactiveadmin").is_active)
+    def test_user_exists(self):
+        admin = AuthUser.objects.get(username="admin")
+        staff = AuthUser.objects.get(username="staff")
+        user = AuthUser.objects.get(username="user")
+        inactiveadmin = AuthUser.objects.get(username="inactiveadmin")
+        inactivestaff = AuthUser.objects.get(username="inactivestaff")
+        inactiveuser = AuthUser.objects.get(username="inactiveuser")
 
-        self.assertTrue(User.objects.get(username="staff").is_staff)
-        self.assertTrue(User.objects.get(username="staff").is_active)
-        self.assertFalse(User.objects.get(username="staff").is_superuser)
-        self.assertTrue(User.objects.get(username="inactivestaff").is_staff)
-        self.assertFalse(User.objects.get(username="inactivestaff").is_superuser)
-        self.assertFalse(User.objects.get(username="inactivestaff").is_active)
+        # Confirm correct assignment
+        self.assertEqual(admin.username, "admin")
+        self.assertEqual(staff.username, "staff")
+        self.assertEqual(user.username, "user")
+        self.assertEqual(inactiveadmin.username, "inactiveadmin")
+        self.assertEqual(inactivestaff.username, "inactivestaff")
+        self.assertEqual(inactiveuser.username, "inactiveuser")
 
-        self.assertTrue(User.objects.get(username="user").is_active)
-        self.assertFalse(User.objects.get(username="user").is_staff)
-        self.assertFalse(User.objects.get(username="user").is_superuser)
-        self.assertFalse(User.objects.get(username="inactiveuser").is_staff)
-        self.assertFalse(User.objects.get(username="inactiveuser").is_superuser)
-        self.assertFalse(User.objects.get(username="inactiveuser").is_active)
-
-        with self.assertRaises(User.DoesNotExist):
-            User.objects.get(username="doesnotexist")
-            User.objects.get(pk=100)
-
-    def test_create_account_view_from_admin(self):
-        """ test view """
-        admin = User.objects.get(username='admin')
-        data = {"username": "testinguserAPI",
-                "password1": "testingpassword",
-                "password2": "testingpassword"}
-        factory = APIRequestFactory(enforce_csrf_checks=True)
-        request = factory.post(reverse('user-list'), format='json', data=data)
-        request.user = admin
-        force_authenticate(request, user=admin)
-        view = UserProfile.as_view()
-        response = view(request)
-        self.assertEqual(response.status_code, 200)
-
-    def test_login_REST_API(self):
-        admin = User.objects.get(username='admin')
-        admin.password = "testpassword"
-        client = APIClient(enforce_csrf_checks=True)
+        # Assert True statements
+        self.assertTrue(admin.is_staff)
+        self.assertTrue(admin.is_superuser)
         self.assertTrue(admin.is_active)
-        self.assertTrue(client.login(username='admin', password='testpassword'))
+        self.assertTrue(inactiveadmin.is_staff)
+        self.assertTrue(inactiveadmin.is_superuser)
+        self.assertTrue(staff.is_staff)
+        self.assertTrue(staff.is_active)
+        self.assertTrue(inactivestaff.is_staff)
+        self.assertTrue(user.is_active)
 
-    def test_token_login_REST_API(self):
-        pass
+        # Assert False statements
+        self.assertFalse(inactiveadmin.is_active)
+        self.assertFalse(staff.is_superuser)
+        self.assertFalse(inactivestaff.is_superuser)
+        self.assertFalse(inactivestaff.is_active)
+        self.assertFalse(user.is_staff)
+        self.assertFalse(user.is_superuser)
+        self.assertFalse(inactiveuser.is_staff)
+        self.assertFalse(inactiveuser.is_superuser)
+        self.assertFalse(inactiveuser.is_active)
 
-    def test_create_account_from_REST_API(self):
-        admin = User.objects.get(username='admin')
-        data = {"username": "testinguserAPI",
-                "password1": "testingpassword",
-                "password2": "testingpassword"}
-        client = APIClient(enforce_csrf_checks=True)
-        client.force_authenticate(user=admin)
-        response = client.post('/api/admin/auth/user/add/', format='json', data=data)
+        # Accounts have associated primary key
+        self.assertIsNotNone(admin.pk)
+        self.assertIsNotNone(staff.pk)
+        self.assertIsNotNone(user.pk)
+        self.assertIsNotNone(inactiveadmin.pk)
+        self.assertIsNotNone(inactivestaff.pk)
+        self.assertIsNotNone(inactiveuser.pk)
 
-        self.assertEqual(response.status_code, 200)
+        # No prior logins
+        self.assertIsNone(admin.last_login)
+        self.assertIsNone(staff.last_login)
+        self.assertIsNone(user.last_login)
+        self.assertIsNone(inactiveadmin.last_login)
+        self.assertIsNone(inactivestaff.last_login)
+        self.assertIsNone(inactiveuser.last_login)
+
+    def test_creat_new_user_with_existing_username(self):
+        options = {"username": "admin",  # This is the same username as created in setUp()
+                   "first_name": "John",
+                   "last_name": "Smith",
+                   "email": "admin@example.org"}
+        with self.assertRaises(IntegrityError):
+            AuthUser.objects.create(**options)
+
+    def test_login(self):
+        admin = User.objects.get(username="admin")
+
+        # password is set and not stored in clear text
+        self.assertIsNotNone(admin.password)
+        self.assertNotEqual(admin.password, "password")
+
+        csrf_client = APIClient(enforce_csrf_checks=True)
+
+        # login with incorrect password
+        self.assertFalse(csrf_client.login(username='admin', password='wrongpassword'))
+
+        # login with correct password
+        self.assertTrue(csrf_client.login(username='admin', password='password'))
+        csrf_client.logout()
