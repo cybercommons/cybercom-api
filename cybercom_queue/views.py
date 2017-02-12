@@ -105,7 +105,7 @@ class Run(APIView):
         if "cybercom_auth_token" in  trim(task_docstring(task_name)):
             try:
                 token = Token.objects.get_or_create(user=self.request.user)
-                kwrgs["cybercom_auth_token"]=str(token[0])
+                kwargs["cybercom_auth_token"]=str(token[0])
             except:
                 pass
         result = self.q.run(task_name, args, kwargs, queue, self.get_username(request),tags)
