@@ -102,6 +102,9 @@ class Run(APIView):
         args = request.DATA.get('args', [])
         kwargs = request.DATA.get('kwargs', {})
         tags = request.DATA.get('tags',[])
+        if "cybercom_auth_token" in  trim(task_docstring(task_name)):
+            token = Token.objects.get_or_create(user=self.request.user)
+            kwrgs["cybercom_auth_token"]=str(token[0])
         result = self.q.run(task_name, args, kwargs, queue, self.get_username(request),tags)
         result['result_url']=reverse('queue-task-result', kwargs={'task_id':result['task_id']}, request=request)
         return Response(result)
