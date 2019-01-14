@@ -25,10 +25,10 @@ TEMPLATE_DIRS = (os.path.join(BASE_DIR, 'templates'),)
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
-from django.conf import global_settings
-TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
-    "api.processor.title",
-)
+# from django.conf import global_settings
+# TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
+#     "api.processor.title",
+# )
 
 USE_X_FORWARDED_HOST =  config.USE_X_FORWARDED_HOST
 SECURE_PROXY_SSL_HEADER = config.SECURE_PROXY_SSL_HEADER
@@ -65,9 +65,11 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.BrowsableAPIRenderer',
         # UJSON 2.3 times faster then std json renderer
         'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.JSONPRenderer',
-        'rest_framework.renderers.XMLRenderer',
-        'rest_framework.renderers.YAMLRenderer',
+        # TODO: Check how to renable following using new REST framework
+        #'rest_framework.renderers.JSONPRenderer',
+        #'rest_framework.renderers.XMLRenderer',
+        #'rest_framework.renderers.YAMLRenderer',
+        # END TODO
         #'data_layer.pagination.PaginatedCSVRenderer',
         #'drf_ujson.renderers.UJSONRenderer',
 

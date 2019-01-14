@@ -6,7 +6,8 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly,DjangoModelPerm
 from rest_framework.views import APIView
 from cybercom_queue.ccelery.q import QueueTask, list_tasks, task_docstring,rm_memcache
 from cybercom_queue.models import taskModel #Run_model
-from rest_framework.renderers import JSONRenderer, JSONPRenderer
+#from rest_framework.renderers import JSONRenderer, JSONPRenderer
+from rest_framework.renderers import JSONRenderer
 from renderer import QueueRunBrowsableAPIRenderer
 from rest_framework.parsers import JSONParser,MultiPartParser,FormParser,FileUploadParser
 from cybercom_queue.util import trim
@@ -74,7 +75,9 @@ class Run(APIView):
     permission_classes = (cybercomTaskPermission,) #(DjangoModelPermissionsOrAnonReadOnly,)
     model = taskModel 
     parser_classes = (JSONParser,MultiPartParser,FormParser)
-    renderer_classes = (QueueRunBrowsableAPIRenderer, JSONRenderer, JSONPRenderer,)
+    # TODO: Check on adding JSONPRenderer back
+    #renderer_classes = (QueueRunBrowsableAPIRenderer, JSONRenderer, JSONPRenderer,)
+    renderer_classes = (QueueRunBrowsableAPIRenderer, JSONRenderer,)
 
     def __init__(self,q=q, *args, **kwargs):
         self.q = q #QueueTask()

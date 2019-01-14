@@ -1,4 +1,5 @@
-from django.conf.urls import patterns, include, url
+#from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth.models import Permission
 from api.views import APIRoot, UserProfile #, UserView
@@ -14,7 +15,7 @@ admin.autodiscover()
 #router=routers.SimpleRouter()
 #router.register(r'accounts', UserView, 'list')
 
-urlpatterns = patterns('',
+urlpatterns = ['',
     #url(r'^api/', include(router.urls)),
     # Django Rest Login Urls
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
@@ -31,4 +32,4 @@ urlpatterns = patterns('',
     url(r'^user/',UserProfile.as_view(),name='user-list'),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 
-)
+]
