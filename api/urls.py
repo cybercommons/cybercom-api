@@ -3,7 +3,7 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth.models import Permission
 from api.views import APIRoot, UserProfile #, UserView
-#from rest_framework import routers
+from rest_framework import routers
 
 try:
     admin.site.register(Permission)
@@ -18,17 +18,22 @@ admin.autodiscover()
 urlpatterns = [#'',
     #url(r'^api/', include(router.urls)),
     # Django Rest Login Urls
+    # TODO: Uncomment following line to continue testing   
  #   url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     # Queue Application
     url(r'^queue/', include('cybercom_queue.urls')),
+    # TODO: Uncomment following 2 lines to continue testing
  #   url(r'^data_store/',include('data_store.urls')),
  #   url(r'^catalog/', include('catalog.urls')),
-    # Admin Urls
+   # Admin Urls
+   # TODO: Uncomment following line to continue testing
  #   url(r'^admin/', include(admin.site.urls)),
     # Main Project View - Customize depending on what Apps are enabled
+    # TODO: Uncomment following 2 lines to continue testing
  #   url(r'^$', APIRoot.as_view()),
  #   url(r'^/\.(?P<format>(api|json|jsonp|xml|yaml))/$', APIRoot.as_view()),
     # User Profile
+    # TODO: Uncomment following line to continue testing
  #   url(r'^user/',UserProfile.as_view(),name='user-list'),
     # Duplicate: url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
