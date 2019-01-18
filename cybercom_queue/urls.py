@@ -14,14 +14,14 @@ from rest_framework.urlpatterns import format_suffix_patterns
 
 admin.autodiscover()
 
-urlpatterns = ['',
-                       #url(r'run/', include(tasks_url)),
-                       #url(r'run/$',Run.as_view(),name='run-main'),
-                       url(r'run/(?P<task_name>[-\w .]+)/$', Run.as_view(), name='run-main'),
-                       url(r'task/(?P<task_id>[-\w]+)/$', UserResult.as_view(), name='queue-task-result'),
-                       url(r'usertasks/$', UserTasks.as_view(), name='queue-user-tasks'),
-                       url(r'memcache',flushMemcache.as_view(), name= 'flush-memcache'),
-                       url(r'^$', Queue.as_view(), name="queue-main"),
+urlpatterns = [#'',
+    #url(r'run/', include(tasks_url)),
+    #url(r'run/$',Run.as_view(),name='run-main'),
+    url(r'run/(?P<task_name>[-\w .]+)/$', Run.as_view(), name='run-main'),
+    url(r'task/(?P<task_id>[-\w]+)/$', UserResult.as_view(), name='queue-task-result'),
+    url(r'usertasks/$', UserTasks.as_view(), name='queue-user-tasks'),
+    url(r'memcache',flushMemcache.as_view(), name= 'flush-memcache'),
+    url(r'^$', Queue.as_view(), name="queue-main"),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns, allowed=['api', 'json', 'jsonp', 'xml', 'yaml'])

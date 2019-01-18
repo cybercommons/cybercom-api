@@ -20,7 +20,13 @@ except ImportError:
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-TEMPLATE_DIRS = (os.path.join(BASE_DIR, 'templates'),)
+#TEMPLATE_DIRS = (os.path.join(BASE_DIR, 'templates'),)
+TEMPLATES = [
+    {#'BACKEND': 'django.template.backends.django.DjangoTemplates',
+     'BACKEND': 'django.template.backends.jinja2.Jinja2',
+     'DIRS': [os.path.join(BASE_DIR, 'templates')]
+    } 
+]
 #print TEMPLATE_DIRS
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
@@ -65,11 +71,9 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.BrowsableAPIRenderer',
         # UJSON 2.3 times faster then std json renderer
         'rest_framework.renderers.JSONRenderer',
-        # TODO: Check how to renable following using new REST framework
-        #'rest_framework.renderers.JSONPRenderer',
-        #'rest_framework.renderers.XMLRenderer',
-        #'rest_framework.renderers.YAMLRenderer',
-        # END TODO
+        'rest_framework_jsonp.renderers.JSONPRenderer',
+        'rest_framework_xml.renderers.XMLRenderer',
+        'rest_framework_yaml.renderers.YAMLRenderer',
         #'data_layer.pagination.PaginatedCSVRenderer',
         #'drf_ujson.renderers.UJSONRenderer',
 

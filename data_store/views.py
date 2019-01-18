@@ -10,7 +10,9 @@ from .models import dataStore
 from rest_framework.settings import api_settings
 from .mongo_paginator import MongoDataPagination, MongoDistinct,MongoGroupby, MongoDataGet,MongoDataDelete,MongoDataSave,MongoDataInsert
 from .renderer import DataBrowsableAPIRenderer, mongoJSONPRenderer,mongoJSONRenderer
-from rest_framework.renderers import XMLRenderer, YAMLRenderer,JSONPRenderer
+#from rest_framework.renderers import XMLRenderer, YAMLRenderer,JSONPRenderer
+from rest_framework_xml.renderers import XMLRenderer
+from rest_framework_yaml.renderers import YAMLRenderer
 from rest_framework.parsers import JSONParser
 from permission import  DataStorePermission, createDataStorePermission
  
