@@ -50,10 +50,14 @@ class UserProfile(LoginRequiredMixin,APIView):
         data = User.objects.get(pk=self.request.user.id)
         serializer = self.serializer_class(data,context={'request':request})
         tok = Token.objects.get_or_create(user=self.request.user)
+        user_groups=[]
+        for g in request.user.groups.all():
+            user_groups.append(g.name)
         rdata = serializer.data
         rdata['name'] = data.get_full_name() 
         rdata['gravator_url']="{0}://www.gravatar.com/avatar/{1}".format(request.scheme,md5(rdata['email'].strip(' \t\n\r')).hexdigest()) 
         rdata['auth-token']= str(tok[0])
+        rdata['groups']=user_groups
         return Response(rdata)
     def post(self,request,format=None):
         user = User.objects.get(pk=self.request.user.id)
