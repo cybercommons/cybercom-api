@@ -14,7 +14,7 @@ djangorestframework-csv==1.3.3
 ecdsa==0.11
 gunicorn==19.6.0
 idna==2.7
-Jinja2==2.7.3
+Jinja2==2.11.3
 kombu==3.0.30
 Markdown==2.4.1
 MarkupSafe==0.23
